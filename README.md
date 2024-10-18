@@ -43,7 +43,8 @@ https://block-house-trial.renas.dev/backtest?symbol=AAPL&short_window=50&long_wi
 -   `SERVER_HOST`
 -   `SSH_PORT`
 -   `SERVER_USER`
-    Also, the public key should be configured at remote server.
+
+Also, the public key should be configured at remote server.
 
 ### Caddyfile used
 
@@ -56,3 +57,7 @@ acme_dns cloudflare {{ cf-token }}
 	reverse_proxy localhost:8123
 }
 ```
+
+### Configure `.env` file manually
+
+see `.env.example`
