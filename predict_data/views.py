@@ -1,6 +1,6 @@
 import pickle
 
-from rest_framework.response import Response
+from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from sklearn.linear_model import LinearRegression
 from collections import deque
@@ -38,9 +38,9 @@ def get_future_stock_price(request):
     duration = request.GET.get('duration')
 
     if stock_symbol is None:
-        return Response({"message": "symbol is required"}, status=400)
+        return JsonResponse({"message": "symbol is required"}, status=400)
     if duration is None:
-        return Response({"message": "duration is required"}, status=400)
+        return JsonResponse({"message": "duration is required"}, status=400)
 
     duration = int(duration)
     results = DailyStockPrice.objects.filter(
@@ -48,7 +48,7 @@ def get_future_stock_price(request):
     ).order_by('-date')[:5].values()
     results = results[::-1]
     if len(results) < 5:
-        return Response({"message": f"not enough history data for {stock_symbol}"}, status=400)
+        return JsonResponse({"message": f"not enough history data for {stock_symbol}"}, status=400)
 
     model = ModelRegistry.get_model()
     future_price = []
@@ -60,7 +60,7 @@ def get_future_stock_price(request):
         dq.popleft()
         dq.append(predicted_value)
 
-    return Response({"message": "success", "future_days_price": future_price})
+    return JsonResponse({"message": "success", "future_days_price": future_price})
 
 
 @api_view(['GET'])
@@ -69,16 +69,16 @@ def predict_and_visualize(request):
     duration = request.GET.get('duration')
 
     if stock_symbol is None:
-        return Response({"message": "symbol is required"}, status=400)
+        return JsonResponse({"message": "symbol is required"}, status=400)
     if duration is None:
-        return Response({"message": "duration is required"}, status=400)
+        return JsonResponse({"message": "duration is required"}, status=400)
 
     duration = int(duration)
     results = DailyStockPrice.objects.filter(
         stock_symbol=stock_symbol
     ).order_by('-date')[:duration].values()
     if len(results) < duration:
-        return Response({"message": f"not enough history data for {stock_symbol}"}, status=400)
+        return JsonResponse({"message": f"not enough history data for {stock_symbol}"}, status=400)
 
     dq = deque([float(ent['close_price']) for ent in results[:5]])
     model = ModelRegistry.get_model()
@@ -98,8 +98,6 @@ def predict_and_visualize(request):
     fig.update_layout(barmode='group', title=f"Trend price over the last {duration} days", xaxis_title="Date",
                       yaxis_title="Values")
 
-    # 将图表转换为 JSON 以便在模板中使用
     chart_html = fig.to_html(full_html=False)
 
-    # 传递图表到模板
     return render(request, 'charts.html', {'chart_html': chart_html})

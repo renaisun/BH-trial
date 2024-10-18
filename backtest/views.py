@@ -1,5 +1,6 @@
 import os
 
+from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
@@ -30,11 +31,11 @@ def get_back_rest_result(request):
         if request.GET.get(param) is None:
             param_missing.append(param)
     if len(param_missing) > 0:
-        return Response({"msg": f"Missing parameters: {', '.join(param_missing)}"}, status=400)
+        return JsonResponse({"msg": f"Missing parameters: {', '.join(param_missing)}"}, status=400)
 
     history = DailyStockPrice.objects.filter(stock_symbol=stock_symbol).order_by('date').values()
 
     initial_invest_amount, short_window, long_window = float(initial_invest_amount), int(short_window), int(long_window)
     result = backtest(initial_invest_amount, short_window, long_window, history)
 
-    return Response({"msg": result})
+    return JsonResponse({"msg": result})

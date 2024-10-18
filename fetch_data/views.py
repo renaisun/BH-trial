@@ -6,6 +6,7 @@ from datetime import datetime
 from http.client import responses
 
 import requests
+from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -20,7 +21,7 @@ EXTERNAL_API_URL = "https://www.alphavantage.co/query"
 def fetch_and_store_user_data(request):
     stock_symbol = request.GET.get("symbol")
     if stock_symbol is None:
-        return Response({"message": "symbol is required"}, status=400)
+        return JsonResponse({"message": "symbol is required"}, status=400)
 
     # Make a request to the external API
     request_param = {
@@ -43,15 +44,15 @@ def fetch_and_store_user_data(request):
             serializer = DailyStockPriceSerializer(data=data)
             if serializer.is_valid():
                 serializer.save()
-                return Response({"message": "Data successfully saved!", "fetched_data": data})
+                return JsonResponse({"message": "Data successfully saved!", "fetched_data": data})
             else:
-                return Response({"error": "Failed to save data", "errors": serializer.errors}, status=400)
+                return JsonResponse({"error": "Failed to save data", "errors": serializer.errors}, status=400)
         else:
-            return Response({"error": "Failed to fetch data from external API", "status_code": response.status_code,
+            return JsonResponse({"error": "Failed to fetch data from external API", "status_code": response.status_code,
                              "response": response}, status=400)
     except Exception as e:
         print(f"Unexpected error while processing {stock_symbol}: {str(e)}")
-        return Response({
+        return JsonResponse({
             "error": "An unexpected error occurred",
             "details": str(e)
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
