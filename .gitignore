@@ -384,4 +384,6 @@ poetry.toml
 # LSP config files
 pyrightconfig.json
 
+dev.log
+dev.pid
 # End of https://www.toptal.com/developers/gitignore/api/macos,pycharm+all,django,python
