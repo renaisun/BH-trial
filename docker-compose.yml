@@ -21,6 +21,5 @@ services:
         condition: service_started
     env_file: ".env"
 
-
 volumes:
   postgres_data:
