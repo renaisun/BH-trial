@@ -1,0 +1,22 @@
+name: blockhouse
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - django=5.1.2
+  - djangorestframework=3.15.2
+  - matplotlib-inline=0.1.7
+  - numpy=2.1.2
+  - pandas=2.2.3
+  - pickleshare=0.7.5
+  - pip=24.2
+  - plotly=5.24.1
+  - python=3.13.0
+  - requests=2.32.3
+  - scikit-learn=1.5.2
+  - setuptools=75.1.0
+  - gunicorn
+  - psycopg2
+  - pip:
+      - decouple==0.0.7
+      - python-dotenv==1.0.1
